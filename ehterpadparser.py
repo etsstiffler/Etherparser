@@ -30,7 +30,7 @@ for column in data:
     if 'pad' in column:
         tmp = str(columnSeriesObj.values[12])
         tmp2 = tmp.split("'")
-        print(tmp2)[1]
+        print(tmp2[2])
         #notes.append([authors[columnSeriesObj.values[12][1]])
         # print('Colunm Name : ', column)
         # print('Column Contents : ', columnSeriesObj.values)
