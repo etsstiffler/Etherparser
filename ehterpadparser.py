@@ -29,8 +29,8 @@ for column in data:
     columnSeriesObj = data[column]    
     if 'pad' in column:
         tmp = str(columnSeriesObj.values[12])
-        tmp2 = len(tmp.split("'"))
-        print(tmp2)
+        tmp2 = tmp.split("'")
+        print(tmp2)[1]
         #notes.append([authors[columnSeriesObj.values[12][1]])
         # print('Colunm Name : ', column)
         # print('Column Contents : ', columnSeriesObj.values)
