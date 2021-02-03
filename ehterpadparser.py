@@ -1,6 +1,7 @@
 import argparse
 import json
 import pandas as pd
+from datetime import datetime
 
 #parsing Arguments
 parser = argparse.ArgumentParser()
@@ -11,7 +12,7 @@ file = args.f
 
 data = pd.read_json(file)
 
-authors = list()
+authors = {}
 notes = list()
 
 # Iterate over the sequence of column names
@@ -23,24 +24,26 @@ for column in data:
         cipher = column.split(":")[1]
         # Realer Name
         name = columnSeriesObj.values[8]
-        authors.append([cipher,name])
+        authors[cipher]= name
 
 for column in data:
     columnSeriesObj = data[column]    
     if 'pad' in column:
         tmp = str(columnSeriesObj.values[12])
-        tmp2 = tmp.split("'")
-        print(tmp2[2])
-        #notes.append([authors[columnSeriesObj.values[12][1]])
-        # print('Colunm Name : ', column)
-        # print('Column Contents : ', columnSeriesObj.values)
-#print(authors)
+    try: 
+        tmp = eval(tmp)
+        author = tmp['author']
+        timestamp = int(tmp['timestamp']) / 1000.0
+        time = datetime.fromtimestamp(timestamp)
+        time = time.strftime("%d %b %Y %H:%M:%S")
     
-#print(authors)
-# for col in data.columns: 
-#     print(col) 
+        realauthor=authors[author]
+        changes = str(columnSeriesObj.values[11])
+        changes = changes.split("$")
+        notes.append(changes[1])
 
+        #print("author is {author} at {timestamp}".format(**tmp))
+    except: pass
 
-# spike_cols = [col for col in data.columns if 'globalAuthor' in col]
-# print(list(data.columns))
-# print(spike_cols)
+str1 = ''.join(str(e) for e in notes)
+print(str1)
