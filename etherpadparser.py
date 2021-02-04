@@ -3,6 +3,7 @@ import os.path
 import json
 import pandas as pd
 from datetime import datetime
+import PySimpleGUI as sg
 
 def is_valid_file(parser, arg):
     if not os.path.exists(arg):
@@ -74,3 +75,5 @@ else:
     with open("chat.csv", "w") as myfile:
         for item in history:
             myfile.write("%s %s %s \n"%(item[0],item[1],item[2]))
+
+
