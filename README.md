@@ -25,6 +25,6 @@ pip install -r requirements.txt
 
 ```shell
 
-python ehterpadparser -f /path/to/.etherpad-file
+python ehterparser -f /path/to/.etherpad-file
 
 ```
