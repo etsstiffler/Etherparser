@@ -3,7 +3,6 @@ import os.path
 import json
 import pandas as pd
 from datetime import datetime
-import PySimpleGUI as sg
 
 def is_valid_file(parser, arg):
     if not os.path.exists(arg):
