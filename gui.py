@@ -1,15 +1,16 @@
 import PySimpleGUI as sg
 import pandas as pd
 from datetime import datetime
+import os
 
 sg.theme("DarkTeal11")
 
 def make_win1():
-    layout = [[sg.Text("Datei: "),sg.Input(key="-INPUTFILE-" , change_submits=True),sg.FileBrowse(key="-IN-", file_types=(("Etherpad Files", "*.etherpad"),),initial_folder='')],
+    layout = [[sg.Text("Datei: "),sg.Input(key="-INPUTFILE-" ,enable_events=True, change_submits=True),sg.FileBrowse(key="-IN-", target="-INPUTFILE-", file_types=(("Etherpad Files", "*.etherpad"),),initial_folder='')],
     [sg.Text('Verlauf:',visible=False, key="-txt-")],
-    [sg.Multiline(key='-out-', size=(80, 20), visible=False, font='ANY 11')],
-    [place(sg.Button("Parse",key="-parse-", visible=True)) , place(sg.InputText(key='Save as', do_not_clear=False, enable_events=True, visible=False)),
-    place(sg.FileSaveAs(initial_folder='',file_types=(('Text', '.txt'), ('CSV', '.csv')))) , place(sg.Button("Exit"))]]
+    [sg.Multiline(key='-out-', size=(80, 20), visible=False)],
+    [place(sg.InputText(key='-save-', do_not_clear=False, enable_events=True, visible=False)),
+    place(sg.FileSaveAs(target="-save-", initial_folder='',file_types=(('Text', '.txt'), ('CSV', '.csv')))) , place(sg.Button("Exit"))]]
     return sg.Window('Etherpad-Parser', layout, location=(100,100), finalize=True)
 
 
@@ -71,9 +72,8 @@ while True:
     event, values = window.read()
     if event == sg.WIN_CLOSED or event=="Exit":
         break
-    elif event == "-parse-":
+    elif event == "-INPUTFILE-" or event=="-parse-":
         try:
-
             file = values["-INPUTFILE-"]
             try:
                 notes = parse(file)
@@ -85,15 +85,21 @@ while True:
                         string = "%s %s %s \n"%(item[0],item[1],item[2])
                         window.Element('-out-').Update(string, append=True)
                 except:
-                    print(string)
+                    sg.Popup('Fehler','Es gab ein Fehler mit der Anzeige')
             except:
                 sg.Popup('Fehler','Keine Datei ausgewählt')
         except:pass
-    # elif event == "Save as":
-    #     try:
+    elif event == "-save-":
+        try:
             
-    #     except:
-    #         sg.Popup('Fehler','Bitte erst Datei parsen')
+            filename = values["-save-"]
+            f = open(filename,"w")
+            f.write(values["-out-"])
+            f.close()
+            os.startfile(filename)
+        except:
+            sg.Popup('Fehler','Task failed successfull')
+
 
 
 
