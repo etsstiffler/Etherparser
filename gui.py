@@ -9,8 +9,8 @@ def make_win1():
     [sg.Text('Verlauf:',visible=False, key="-txt-")],
     [sg.Multiline(key='-out-', size=(80, 20), visible=False, font='ANY 11')],
     [place(sg.Button("Parse",key="-parse-", visible=True)) , place(sg.InputText(key='Save as', do_not_clear=False, enable_events=True, visible=False)),
-    place(sg.FileSaveAs(initial_folder='/tmp')) , place(sg.Button("Exit"))]]
-    return sg.Window('Etherpad-Parser', layout, location=(800,600), finalize=True)
+    place(sg.FileSaveAs(initial_folder='',file_types=(('Text', '.txt'), ('CSV', '.csv')))) , place(sg.Button("Exit"))]]
+    return sg.Window('Etherpad-Parser', layout, location=(100,100), finalize=True)
 
 
 def parse(file):
