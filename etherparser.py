@@ -55,12 +55,12 @@ for column in data:
         time = time.strftime("%d %b %Y %H:%M:%S")
     
         realauthor=authors[author]
-        changes = str(columnSeriesObj.values[11])
-        changes = changes.split("$")
-        changes = changes[1]
-        if changes == '':
-            changes = "DELETE"
-        history.append([time,realauthor,changes])
+        input = str(columnSeriesObj.values[11])
+        input = input.split("$")
+        input = input[1]
+        if input == '':
+            input = "DELETE"
+        history.append([time,realauthor,input])
     except: pass
 
 #Ausgabe erstellen
