@@ -3,5 +3,5 @@
 chat.csv
 build/
 dist/
-gui.spec
-__pycache__
+*.spec
+__pycache__/
