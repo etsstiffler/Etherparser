@@ -1,3 +1,7 @@
 *.etherpad
 *.json
 chat.csv
+build/
+dist/
+gui.spec
+__pycache__
