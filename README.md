@@ -5,6 +5,8 @@ This tool allows to view chronological changes in a BBB Ehterpad known as "Getei
 ## Requirements
 * Python 3
 * Tkinter
+
+Ubuntu:
 ```
 sudo apt install python3-tk
 
@@ -15,6 +17,20 @@ sudo apt install python3-tk
 git clone 
 
 pip install -r requirements.txt
+```
+
+## Usage
+Commandline:
+```
+python cli-etherparser.py -f /path/to/etherpadfile
+``` 
+This will read the etherpadfile and saves the output to 'chat.csv' in the same directory
+
+Using the GUI
+- Windows: Use the latest .exe file from releases.
+- Linux:
+```
+python etherparser.py
 ```
 
 
