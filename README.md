@@ -20,7 +20,7 @@ pip install -r requirements.txt
 ```
 
 ## Usage
-Notice: You need an *.etherpad* from BBB. Hit "Geteilte Notizen->Export", choose *Etherpad* an save the file.
+Notice: You need an *.etherpad*-file from BBB. Hit "Geteilte Notizen->Export", choose *Etherpad* an save the file.
 Commandline:
 ```
 python cli-etherparser.py -f /path/to/etherpadfile
