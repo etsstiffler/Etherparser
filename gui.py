@@ -1,9 +1,31 @@
+#  Copyright 2021 fdre 
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+
+#        http://www.apache.org/licenses/LICENSE-2.0
+
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
 import PySimpleGUI as sg
-import pandas as pd
+import json
 from datetime import datetime
 import os
 
 sg.theme("DarkTeal11")
+
+def place(elem):
+    '''
+    Places element provided into a Column element so that its placement in the layout is retained.
+    :param elem: the element to put into the layout
+    :return: A column element containing the provided element
+    '''
+    return sg.Column([[elem]], pad=(0,0))
+
 
 def make_win1():
     layout = [[sg.Text("Datei: "),sg.Input(key="-INPUTFILE-" ,enable_events=True, change_submits=True),sg.FileBrowse(key="-IN-", target="-INPUTFILE-", file_types=(("Etherpad Files", "*.etherpad"),),initial_folder='')],
@@ -15,9 +37,10 @@ def make_win1():
 
 
 def parse(file):
-    data = pd.read_json(file)
+    file = open(file,"r")
+    data = json.load(file)
 
-    #extract relevant Data frpm DF time, author, chars --> history
+    #extract relevant Data time, author, text --> history
     authors = {}
     history = list()
 
@@ -29,39 +52,31 @@ def parse(file):
             # Pseudonyme der Autoren auslesen
             cipher = column.split(":")[1]
             # Realer Name
-            name = columnSeriesObj.values[8]
+            name = columnSeriesObj['name']
             authors[cipher]= name
 
-            # Iterate over the sequence of column names 
-            for column in data:
-                columnSeriesObj = data[column]    
-                if 'pad' in column:
-                    tmp = str(columnSeriesObj.values[12])
-                try:   
-                    tmp = eval(tmp)
-                    author = tmp['author']
-                    timestamp = int(tmp['timestamp']) / 1000.0
-                    time = datetime.fromtimestamp(timestamp)
-                    time = time.strftime("%d %b %Y %H:%M:%S")
-                    
-                    realauthor=authors[author]
-                    input = str(columnSeriesObj.values[11])
-                    input = input.split("$")
-                    input = input[1]
-                    if input == '':
-                        input = "DELETE"
-                    history.append([time,realauthor,input])
-                except: pass
+    # Iterate over the sequence of column names
+    for column in data:
+        columnSeriesObj = data[column]   
+        if 'pad' in column:
+            try:
+                author = columnSeriesObj['meta']['author']
+                timestamp = int(columnSeriesObj['meta']['timestamp']) / 1000.0
+                time = datetime.fromtimestamp(timestamp)
+                time = time.strftime("%d %b %Y %H:%M:%S")
+
+                realauthor=authors[author]
+                input = columnSeriesObj['changeset']
+
+                input = input.split("$")
+                input = input[1]
+                if input == '':
+                    input = "DELETE"
+                history.append([time,realauthor,input])
+            except: pass
 
     return history
 
-def place(elem):
-    '''
-    Places element provided into a Column element so that its placement in the layout is retained.
-    :param elem: the element to put into the layout
-    :return: A column element containing the provided element
-    '''
-    return sg.Column([[elem]], pad=(0,0))
 
 
 ###Building Window
@@ -85,7 +100,7 @@ while True:
                         string = "%s %s %s \n"%(item[0],item[1],item[2])
                         window.Element('-out-').Update(string, append=True)
                 except:
-                    sg.Popup('Fehler','Es gab ein Fehler mit der Anzeige')
+                    sg.Popup('Fehler','Es gab einen Fehler bitte Entickler kontaktieren')
             except:
                 sg.Popup('Fehler','Keine Datei ausgewählt')
         except:pass
