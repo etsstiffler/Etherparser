@@ -20,27 +20,16 @@ pip install -r requirements.txt
 ```
 
 ## Usage
+Notice: You need an *.etherpad* from BBB. Hit "Geteilte Notizen->Export", choose *Etherpad* an save the file.
 Commandline:
 ```
 python cli-etherparser.py -f /path/to/etherpadfile
 ``` 
-This will read the etherpadfile and saves the output to 'chat.csv' in the same directory
+This will read the etherpadfile and saves the output to *chat.csv* in the same directory
 
 Using the GUI
 - Windows: Use the latest .exe file from releases.
 - Linux:
 ```
 python etherparser.py
-```
-
-
-
-## Usage
-1. Export the Etherpad from BBB before (!!!) closing.
-2. Run
-
-```shell
-
-python ehterparser -f /path/to/.etherpad-file
-
 ```
