@@ -1,6 +1,6 @@
 import argparse
 import os.path
-import pandas as pd
+import json
 from datetime import datetime
 
 def is_valid_file(parser, arg):
@@ -8,9 +8,9 @@ def is_valid_file(parser, arg):
         parser.error("The file %s does not exist!" % arg)
     else:
         if arg.endswith('.json'):
-            return open(arg, 'r') 
+            return open(arg, 'r', encoding='utf-8') 
         elif arg.endswith('.etherpad'):
-            return open(arg, 'r')
+            return open(arg, 'r', encoding='utf-8')
         else:
             parser.error("The file %s is not a JSON or Ehterpad file." % arg)
 
@@ -23,10 +23,11 @@ parser.add_argument("-f", dest="file", required=True,
 args = parser.parse_args()
 
 
-data = pd.read_json(args.file)
+data = json.load(args.file)
 
 
-#extract relevant Data frpm DF time, author, chars --> history
+
+#extract relevant Data time, author, text --> history
 authors = {}
 history = list()
 
@@ -38,30 +39,28 @@ for column in data:
         # Pseudonyme der Autoren auslesen
         cipher = column.split(":")[1]
         # Realer Name
-        name = columnSeriesObj.values[8]
+        name = columnSeriesObj['name']
         authors[cipher]= name
 
-# Iterate over the sequence of column names 
+# Iterate over the sequence of column names
 for column in data:
-    columnSeriesObj = data[column]    
+    columnSeriesObj = data[column]   
     if 'pad' in column:
-        tmp = str(columnSeriesObj.values[12])
-    try:
-        
-        tmp = eval(tmp)
-        author = tmp['author']
-        timestamp = int(tmp['timestamp']) / 1000.0
-        time = datetime.fromtimestamp(timestamp)
-        time = time.strftime("%d %b %Y %H:%M:%S")
-    
-        realauthor=authors[author]
-        input = str(columnSeriesObj.values[11])
-        input = input.split("$")
-        input = input[1]
-        if input == '':
-            input = "DELETE"
-        history.append([time,realauthor,input])
-    except: pass
+        try:
+            author = columnSeriesObj['meta']['author']
+            timestamp = int(columnSeriesObj['meta']['timestamp']) / 1000.0
+            time = datetime.fromtimestamp(timestamp)
+            time = time.strftime("%d %b %Y %H:%M:%S")
+
+            realauthor=authors[author]
+            input = columnSeriesObj['changeset']
+
+            input = input.split("$")
+            input = input[1]
+            if input == '':
+                input = "DELETE"
+            history.append([time,realauthor,input])
+        except: pass
 
 #Ausgabe erstellen
 
@@ -73,5 +72,3 @@ else:
     with open("chat.csv", "w") as myfile:
         for item in history:
             myfile.write("%s %s %s \n"%(item[0],item[1],item[2]))
-
-
