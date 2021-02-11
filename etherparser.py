@@ -11,12 +11,24 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import sys
 import PySimpleGUI as sg
 import json
 from datetime import datetime
 import os
 
 sg.theme("DarkTeal11")
+
+## fix missing icon after building with pyinstaller
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    try:
+        # PyInstaller creates a temp folder and stores path in _MEIPASS
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 def place(elem):
     '''
@@ -33,7 +45,7 @@ def make_win1():
     [sg.Multiline(key='-out-', size=(80, 20), visible=False)],
     [place(sg.InputText(key='-save-', do_not_clear=False, enable_events=True, visible=False)),
     place(sg.FileSaveAs(target="-save-", initial_folder='',file_types=(('Text', '.txt'), ('CSV', '.csv')))) , place(sg.Button("Exit"))]]
-    return sg.Window('Etherpadparser', layout, icon='logo.ico', location=(100,100), finalize=True)
+    return sg.Window('Etherpadparser', layout, icon=resource_path("logo.ico"), location=(100,100), finalize=True)
 
 
 def parse(file):
