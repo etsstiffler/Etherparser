@@ -3,7 +3,7 @@
 This tool allows to view chronological changes in a BBB Ehterpad known as "Geteilte Notizen"
 
 ## Requirements
-* Python 3
+* Python >=3.8.5
 * Tkinter
 
 Ubuntu:
@@ -32,4 +32,10 @@ Using the GUI
 - Linux:
 ```
 python etherparser.py
+```
+
+Building EXE-File (requires pyinstaller on Windows)
+
+```
+pyinstaller -wF -i 'logo.ico' --clean --add-data="logo.ico;." .\etherparser.py
 ```
