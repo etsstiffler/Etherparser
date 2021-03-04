@@ -11,10 +11,11 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-import os
-from os import path
-import json
-from datetime import datetime
+import os as _os
+from os import path as _path
+import io as _io
+import json as _json
+from datetime import datetime as _datetime
 
 
 class Changeset:
@@ -29,7 +30,7 @@ class Changeset:
         """
         self.author_id = author_id
         self.content = content
-        self.time = datetime.fromtimestamp(timestamp)
+        self.time = _datetime.fromtimestamp(timestamp)
 
 
 class Etherparser:
@@ -239,9 +240,9 @@ class Etherparser:
         @param single_lines: Whether multi-line changes should be shown in only one line. Line feeds will be escaped
         @param only_insertions: Changes with no text will be stripped out
         """
-        dirname = path.dirname(file)
+        dirname = _path.dirname(file)
         if dirname:
-            os.makedirs(dirname, exist_ok=True)
+            _os.makedirs(dirname, exist_ok=True)
         with open(file, "w") as f:
             f.write(self.get_log(single_lines=single_lines, only_insertions=only_insertions))
 
@@ -255,9 +256,9 @@ class Etherparser:
         @param sep: The separator of the values
         @param only_insertions: Changes with no text will be stripped out
         """
-        dirname = path.dirname(file)
+        dirname = _path.dirname(file)
         if dirname:
-            os.makedirs(dirname, exist_ok=True)
+            _os.makedirs(dirname, exist_ok=True)
         with open(file, "w") as f:
             f.write(self.get_csv(sep=sep, only_insertions=only_insertions))
 
@@ -270,9 +271,9 @@ class Etherparser:
         @param file: The path to the output file
         @param indent: The indent used for indentation
         """
-        dirname = path.dirname(file)
+        dirname = _path.dirname(file)
         if dirname:
-            os.makedirs(dirname, exist_ok=True)
+            _os.makedirs(dirname, exist_ok=True)
         with open(file, "w") as f:
             f.write(self.get_contributions(indent=indent))
 
@@ -285,18 +286,30 @@ class Etherparser:
         @param string: The etherpad file as a json string
         @return: An Etherparser object
         """
-        d = json.loads(string)
+        d = _json.loads(string)
         return Etherparser(d)
 
     @staticmethod
-    def from_file(file: str):
+    def from_file(path: str):
         """Creates an Etherparser object from the etherpad file
 
         This is an alternate constructor. It takes the path of the etherpad file and returns an Etherparser object.
 
-        @param file: The path to the etherpad file
+        @param path: The path to the etherpad file
         @return: An Etherparser object
         """
-        with open(file) as f:
-            d = json.load(f)
+        with open(path) as f:
+            d = _json.load(f)
         return Etherparser(d)
+
+    @staticmethod
+    def from_io(io: _io.TextIOWrapper):
+        """Creates an Etherparser object from an opened file object
+
+        This is an alternate constructor. It takes an opened file (TextIOWrapper) object
+         as returned by the build-in function `open` and returns an Etherparser object.
+
+        @param io: An TextIOWrapper object of the etherpad file
+        @return: An Etherparser object
+        """
+        return Etherparser.from_string(io.read())
