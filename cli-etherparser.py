@@ -29,11 +29,11 @@ def main():
                         default=False,
                         help="export the etherpad content in a csv format",
                         dest="export_csv")
-    parser.add_argument("-u", "--user-list",
+    parser.add_argument("-u", "--author-list",
                         action="store_true",
                         default=False,
-                        help="export the etherpad content as a user list with their whole contributions",
-                        dest="export_user_list")
+                        help="export the etherpad content as a list of the authors along with their contributions",
+                        dest="export_author_list")
     parser.add_argument("-a", "--all",
                         action="store_true",
                         default=False,
@@ -76,7 +76,7 @@ def main():
             etherparser.save_log(path.join(output_dir, basename + ".log"))
         if args.export_csv or args.export_all:
             etherparser.save_csv(path.join(output_dir, basename + ".csv"), args.separator)
-        if args.export_user_list or args.export_all:
+        if args.export_author_list or args.export_all:
             etherparser.save_contributions(path.join(output_dir, basename + ".txt"))
 
 if __name__ == "__main__":
