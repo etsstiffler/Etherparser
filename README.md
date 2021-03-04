@@ -22,7 +22,7 @@ pip install -r requirements.txt
 ## Usage
 Notice: You need an *.etherpad*-file from BBB. Hit "Geteilte Notizen->Export", choose *Etherpad* an save the file.
 
-###Commandline:
+### Commandline:
 ```
 python cli-etherparser.py /path/to/etherpadfile
 ``` 
