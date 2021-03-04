@@ -1,74 +1,83 @@
+#  Copyright 2021 MAP2005
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+
+#        http://www.apache.org/licenses/LICENSE-2.0
+
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
+import os
+import sys
+from os import path
 import argparse
-import os.path
-import json
-from datetime import datetime
+from modules.parser import Etherparser
 
-def is_valid_file(parser, arg):
-    if not os.path.exists(arg):
-        parser.error("The file %s does not exist!" % arg)
-    else:
-        if arg.endswith('.json'):
-            return open(arg, 'r', encoding='utf-8') 
-        elif arg.endswith('.etherpad'):
-            return open(arg, 'r', encoding='utf-8')
+def main():
+    parser = argparse.ArgumentParser(description="Convert one ore more etherpad files into a readable format.")
+    parser.add_argument("-l", "--log",
+                        action="store_true",
+                        default=True,
+                        help="export the etherpad content in a log like format",
+                        dest="export_log")
+    parser.add_argument("-c", "--csv",
+                        action="store_true",
+                        default=False,
+                        help="export the etherpad content in a csv format",
+                        dest="export_csv")
+    parser.add_argument("-u", "--user-list",
+                        action="store_true",
+                        default=False,
+                        help="export the etherpad content as a user list with their whole contributions",
+                        dest="export_user_list")
+    parser.add_argument("-a", "--all",
+                        action="store_true",
+                        default=False,
+                        help="export the etherpad content in all formats",
+                        dest="export_all")
+    parser.add_argument("--sep",
+                        default=",",
+                        help="the separator used for CSV files",
+                        dest="separator")
+    parser.add_argument("-o",
+                        default=None,
+                        type=str,
+                        help="the output directory",
+                        dest="output_dir")
+    parser.add_argument("file",
+                        nargs='+',
+                        type=argparse.FileType('r'),
+                        help="the etherpad files to parse")
+
+    args = parser.parse_args()
+
+    for file in args.file:
+        if args.output_dir is not None:
+            if not path.isdir(args.output_dir):
+                try:
+                    os.makedirs(args.output_dir)
+                    output_dir = args.output_dir
+                except FileExistsError:
+                    parser.error(f"The file '{args.output_dir}' does already exist")
+                    sys.exit(1)
+            else:
+                output_dir = args.output_dir
         else:
-            parser.error("The file %s is not a JSON or Ehterpad file." % arg)
+            output_dir = path.dirname(file.name)
 
+        basename = "".join(path.basename(file.name).split('.')[:-1])
+        etherparser = Etherparser.from_io(file)
 
-#parsing Arguments
-parser = argparse.ArgumentParser()
-parser.add_argument("-f", dest="file", required=True,
-                    help="input file to parse", metavar="FILE",
-                    type=lambda x: is_valid_file(parser, x))
-args = parser.parse_args()
+        if args.export_log or args.export_all:
+            etherparser.save_log(path.join(output_dir, basename + ".log"))
+        if args.export_csv or args.export_all:
+            etherparser.save_csv(path.join(output_dir, basename + ".csv"), args.separator)
+        if args.export_user_list or args.export_all:
+            etherparser.save_contributions(path.join(output_dir, basename + ".txt"))
 
-
-data = json.load(args.file)
-
-
-
-#extract relevant Data time, author, text --> history
-authors = {}
-history = list()
-
-# Iterate over the sequence of column names save Authors
-for column in data:
-   columnSeriesObj = data[column]
-   # Check global Authors
-   if 'globalAuthor' in column:
-        # Pseudonyme der Autoren auslesen
-        cipher = column.split(":")[1]
-        # Realer Name
-        name = columnSeriesObj['name']
-        authors[cipher]= name
-
-# Iterate over the sequence of column names
-for column in data:
-    columnSeriesObj = data[column]   
-    if 'pad' in column:
-        try:
-            author = columnSeriesObj['meta']['author']
-            timestamp = int(columnSeriesObj['meta']['timestamp']) / 1000.0
-            time = datetime.fromtimestamp(timestamp)
-            time = time.strftime("%d %b %Y %H:%M:%S")
-
-            realauthor=authors[author]
-            input = columnSeriesObj['changeset']
-
-            input = input.split("$")
-            input = input[1]
-            if input == '':
-                input = "DELETE"
-            history.append([time,realauthor,input])
-        except: pass
-
-#Ausgabe erstellen
-
-if not os.path.exists('chat.csv'):
-    with open("chat.csv", "a") as myfile:
-        for item in history:
-            myfile.write("%s %s %s \n"%(item[0],item[1],item[2]))
-else:
-    with open("chat.csv", "w") as myfile:
-        for item in history:
-            myfile.write("%s %s %s \n"%(item[0],item[1],item[2]))
+if __name__ == "__main__":
+    main()
