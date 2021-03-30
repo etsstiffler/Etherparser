@@ -6,3 +6,7 @@ dist/
 *.spec
 __pycache__/
 *.svg
+# VirtualEnv
+venv/
+# PyCharm IDE
+.idea/
