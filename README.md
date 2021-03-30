@@ -8,14 +8,18 @@ This tool allows to view chronological changes in a BBB Etherpad known as "Getei
 
 Ubuntu:
 ```
-sudo apt install python3-tk
+sudo apt install python3-tk python3-pip git
+git clone https://github.com/etsstiffler/Etherparser
+cd Etherparser
+pip3 install -r requirements.txt
+python3 etherparser.py
 
 ```
 
-## Installation
+## Installation (if only python3 is installed)
 ``` 
-git clone 
-
+git clone https://github.com/etsstiffler/Etherparser
+cd Etherparser
 pip install -r requirements.txt
 ```
 
